@@ -1,6 +1,6 @@
 {
     "name": "profmugomes/blumiga",
-    "version": "1.0.0-alpha",
+    "version": "1.1.0-alpha",
     "description": "Blumiga é um microframework MVC para PHP com arquitetura procedural, modular e de alta performance.",
     "keywords": ["php", "framework", "microframework", "mvc", "procedural", "functional", "modular", "lightweight", "composer", "blumiga"],
     "type": "project",
