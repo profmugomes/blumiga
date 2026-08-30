@@ -27,7 +27,7 @@
         <h2>🚀 Instalação via Composer</h2>
         <p>Execute o seguinte comando para criar um novo projeto:</p>
         <div class="code-block">
-            <pre><code>composer create-project bluiceoficial/blumiga meu-projeto</code></pre>
+            <pre><code>composer create-project profmugomes/blumiga meu-projeto</code></pre>
         </div>
         <p>Em seguida, navegue até o diretório do projeto:</p>
         <div class="code-block">

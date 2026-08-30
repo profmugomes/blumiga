@@ -2,7 +2,7 @@
 // Copyright (C) 2026 Murilo Gomes Julio
 // SPDX-License-Identifier: MIT
 
-// Site: https://www.bluice.com.br
+// Site: https://www.profmugomes.com.br
 
 // Models
 function model(string $model_path): string
@@ -18,20 +18,24 @@ function model(string $model_path): string
     $parts = explode('/', $model_path);
     $model_name = end($parts);
     $base_models_dir = dirname(__FILE__, 2) . '/app/models/';
+    $root = realpath(dirname(__FILE__, 2));
 
     // Cenário A: O arquivo está direto na raiz (ex: app/models/homeModel.php)
     $file_path = $base_models_dir . $model_path . '.php';
+    $real = realpath($file_path);
 
     // Cenário B: Se não existir na raiz, tenta na subpasta (ex: app/models/home/homeModel.php)
-    if (!file_exists($file_path)) {
+    if ($real === false || !str_starts_with($real, $root)) {
         $folder_name = str_replace('Model', '', $model_name);
         $file_path = $base_models_dir . $folder_name . '/' . $model_name . '.php';
+        $real = realpath($file_path);
     }
 
-    if (file_exists($file_path)) {
-        require_once($file_path);
+    if ($real !== false && str_starts_with($real, $root) && file_exists($real)) {
+        require_once($real);
     } else {
-        die("Blumiga Erro: O arquivo do Model não foi encontrado na raiz e nem em subpastas: '{$file_path}'");
+        error_log("Blumiga Erro: Model não encontrado: {$model_path}");
+        die("Blumiga Erro: O arquivo do Model não foi encontrado.");
     }
 
     // Retorna o Namespace correto.
@@ -41,28 +45,34 @@ function model(string $model_path): string
 // Views
 function view(string $path, array $data = [], ?string $layout = null): void
 {
-    $sPath = dirname(__FILE__, 2) . '/app/views/' . $path . '.php';
+    $viewsRoot = realpath(dirname(__FILE__, 2) . '/app/views');
+    if ($viewsRoot === false) {
+        die("Blumiga Erro: Diretório de views não encontrado.");
+    }
 
-    if (!file_exists($sPath)) {
-        die("Blumiga Erro: A View '{$path}.php' não foi encontrada em: '{$sPath}'");
+    $sPath = realpath($viewsRoot . '/' . $path . '.php');
+    if ($sPath === false || !str_starts_with($sPath, $viewsRoot . DIRECTORY_SEPARATOR)) {
+        error_log("Blumiga Erro: View não encontrada: {$path}");
+        die("Blumiga Erro: A View não foi encontrada.");
     }
 
     if ($layout !== null) {
         ob_start();
-        extract($data);
-        include $sPath;
+        extract($data, EXTR_SKIP);
+        include_once($sPath);
         $content = ob_get_clean();
 
-        $layoutPath = dirname(__FILE__, 2) . '/app/views/' . $layout . '.php';
-        if (!file_exists($layoutPath)) {
-            die("Blumiga Erro: O Layout '{$layout}.php' não foi encontrado em: '{$layoutPath}'");
+        $layoutPath = realpath($viewsRoot . '/' . $layout . '.php');
+        if ($layoutPath === false || !str_starts_with($layoutPath, $viewsRoot . DIRECTORY_SEPARATOR)) {
+            error_log("Blumiga Erro: Layout não encontrado: {$layout}");
+            die("Blumiga Erro: O Layout não foi encontrado.");
         }
 
         $data['content'] = $content;
-        extract($data);
-        include $layoutPath;
+        extract($data, EXTR_SKIP);
+        include_once($layoutPath);
     } else {
-        extract($data);
+        extract($data, EXTR_SKIP);
         include_once($sPath);
     }
 }
@@ -75,10 +85,15 @@ function asset(string $path): string
 }
 
 // rotas
-/** @disregard P1008 */
-$blumiga_routeURLParts = array_values(array_filter(explode('/', $blumiga_routePath)));
-/** @disregard P1008 */
-$blumiga_routeURLs = [$blumiga_routePath, $blumiga_routeURLParts];
+if (isset($blumiga_routePath)) {
+    /** @disregard P1008 */
+    $blumiga_routeURLParts = array_values(array_filter(explode('/', $blumiga_routePath)));
+    /** @disregard P1008 */
+    $blumiga_routeURLs = [$blumiga_routePath, $blumiga_routeURLParts];
+} else {
+    $blumiga_routeURLParts = [];
+    $blumiga_routeURLs = ['/', []];
+}
 
 function getURL(int $number): string
 {
@@ -105,7 +120,7 @@ function getLastURL(): string
 }
 
 // Anti XSS
-function e(?string $value, int $flags = ENT_QUOTES | ENT_SUBSTITUTE, string $encoding = 'UTF-8'): ?string
+function e(?string $value, int $flags = ENT_QUOTES | ENT_SUBSTITUTE, string $encoding = 'UTF-8'): string
 {
     return (is_null($value)) ? '' : htmlspecialchars($value, $flags, $encoding);
 }
@@ -195,18 +210,18 @@ function requestURI(): string
 // IP: Captura o IP do visitante
 function getClientIP(): string
 {
-    // Cloudflare
+    // Cloudflare — confiável quando o servidor está atrás do Cloudflare
     if (!empty($_SERVER['HTTP_CF_CONNECTING_IP']) && filter_var($_SERVER['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP)) {
         return $_SERVER['HTTP_CF_CONNECTING_IP'];
     }
 
-    // Proxy confiável enviando o X-Forwarded-For
-    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-        $ip = trim($ips[0]);
-
-        if (filter_var($ip, FILTER_VALIDATE_IP)) {
-            return $ip;
+    // X-Forwarded-For — SOMENTE quando houver proxy reverso configurado
+    if (defined('BLUMIGA_TRUSTED_PROXY') && BLUMIGA_TRUSTED_PROXY
+        && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ips = array_map('trim', explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+        $ips = array_filter($ips, fn($ip) => filter_var($ip, FILTER_VALIDATE_IP));
+        if (!empty($ips)) {
+            return reset($ips);
         }
     }
 
@@ -214,10 +229,23 @@ function getClientIP(): string
 }
 
 // Redirecionar
-function redirect(string $url, mixed $params = '')
+function redirect(string $url, mixed $params = ''): void
 {
     if (is_array($params)) {
         $url .= '?' . http_build_query($params);
+    }
+
+    // Prevenir open redirect — permitir apenas URLs relativas ou do mesmo host
+    $parsed = parse_url($url);
+    $currentHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+    if (isset($parsed['host']) && $parsed['host'] !== $currentHost) {
+        error_log("Blumiga Segurança: Tentativa de open redirect para: {$url}");
+        $url = '/';
+    }
+
+    if (isset($parsed['scheme']) && !in_array($parsed['scheme'], ['http', 'https', ''], true)) {
+        $url = '/';
     }
 
     header('Location: ' . $url);
@@ -225,12 +253,12 @@ function redirect(string $url, mixed $params = '')
 }
 
 // JavaScript
-function windowAlert(string $message)
+function windowAlert(string $message): void
 {
     printf("<script>window.alert(%s);</script>", eJS($message));
 }
 
-function redirectJS(string $url, mixed $params = '')
+function redirectJS(string $url, mixed $params = ''): void
 {
     if (is_array($params)) {
         $url .= '?' . http_build_query($params);
@@ -297,7 +325,7 @@ function dayOfWeek(string $date, string $locale = 'pt_BR'): string
 function formatCurrency(float|string $value, string $currency = 'BRL', string $locale = 'pt_BR'): string
 {
     $floatValue = (float)$value;
-    $formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+    $formatter = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
     $formattedValue = $formatter->formatCurrency($floatValue, strtoupper($currency));
 
     return $formattedValue !== false ? $formattedValue : number_format($floatValue, 2, ',', '.');
@@ -359,7 +387,7 @@ function generateSlug(string $value): string
 // Debug Array: Exibe estruturas de dados formatadas com a tag HTML pre.
 function pre(mixed $value): void
 {
-    printf('<pre>%s</pre>', htmlspecialchars(print_r($value, true)));
+    printf('<pre>%s</pre>', htmlspecialchars(print_r($value, true), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
 }
 
 // containsAny: Verifica se uma string contém algum dos termos enviados (aceita array ou string)
@@ -393,16 +421,16 @@ function encrypt(string $value, string $key): string
 }
 
 // Data Decryption: AES-256-CBC + HMAC-SHA256 verification
-function decrypt(string $value, string $key): string
+function decrypt(string $value, string $key): string|false
 {
     $cipher = 'aes-256-cbc';
     $data = base64_decode($value);
-    if ($data === false || $data === '') return '';
+    if ($data === false || $data === '') return false;
 
     $ivLength = openssl_cipher_iv_length($cipher);
     $macLen = 32;
 
-    if (strlen($data) < $ivLength + $macLen) return '';
+    if (strlen($data) < $ivLength + $macLen) return false;
 
     $mac = substr($data, -$macLen);
     $payload = substr($data, 0, -$macLen);
@@ -411,14 +439,14 @@ function decrypt(string $value, string $key): string
     $macKey = hash_hmac('sha256', $key, 'blumiga-hmac-mac', true);
 
     $expectedMac = hash_hmac('sha256', $payload, $macKey, true);
-    if (!hash_equals($expectedMac, $mac)) return '';
+    if (!hash_equals($expectedMac, $mac)) return false;
 
     $iv = substr($payload, 0, $ivLength);
     $ciphertext = substr($payload, $ivLength);
 
     $decrypted = openssl_decrypt($ciphertext, $cipher, $encKey, OPENSSL_RAW_DATA, $iv);
 
-    return $decrypted !== false ? $decrypted : '';
+    return $decrypted !== false ? $decrypted : false;
 }
 
 // Client Language: Detecta o idioma do navegador do visitante.
@@ -452,16 +480,26 @@ function createDir(string $path): bool
 // Read File: Lê o conteúdo de um arquivo com segurança.
 function readFileContent(string $filename): string
 {
-    if (!file_exists($filename) || is_dir($filename)) {
+    $real = realpath($filename);
+    $root = realpath(dirname(__FILE__, 2));
+    if ($real === false || $root === false || !str_starts_with($real, $root)) {
         return '';
     }
-    $content = file_get_contents($filename);
+    if (is_dir($real)) {
+        return '';
+    }
+    $content = file_get_contents($real);
     return $content !== false ? $content : '';
 }
 
 // Create/Write File: Cria ou anexa dados em um arquivo de texto.
 function writeFileContent(string $filename, string $data, bool $replace = false): bool
 {
+    $real = realpath(dirname($filename));
+    $root = realpath(dirname(__FILE__, 2));
+    if ($real === false || $root === false || !str_starts_with($real, $root)) {
+        return false;
+    }
     $flags = $replace ? 0 : FILE_APPEND;
     return file_put_contents($filename, $data, $flags) !== false;
 }
@@ -469,24 +507,36 @@ function writeFileContent(string $filename, string $data, bool $replace = false)
 // Delete File: Exclui um arquivo do disco se ele existir.
 function deleteFile(string $filename): bool
 {
-    return file_exists($filename) && !is_dir($filename) ? @unlink($filename) : false;
+    $real = realpath($filename);
+    $root = realpath(dirname(__FILE__, 2));
+    if ($real === false || $root === false || !str_starts_with($real, $root)) {
+        return false;
+    }
+    return !is_dir($real) ? unlink($real) : false;
 }
 
 // Delete Directory Recursive: Remove pastas e subpastas de forma recursiva com segurança.
 function deleteDir(string $directory): bool
 {
-    if (!is_dir($directory)) {
+    $real = realpath($directory);
+    $root = realpath(dirname(__FILE__, 2));
+
+    if ($real === false || $root === false || !str_starts_with($real, $root)) {
         return false;
     }
 
-    $items = scandir($directory);
+    if (!is_dir($real)) {
+        return false;
+    }
+
+    $items = scandir($real);
 
     foreach ($items as $item) {
         if ($item === '.' || $item === '..') {
             continue;
         }
 
-        $path = $directory . DIRECTORY_SEPARATOR . $item;
+        $path = $real . DIRECTORY_SEPARATOR . $item;
 
         if (is_dir($path)) {
             deleteDir($path);
@@ -495,7 +545,7 @@ function deleteDir(string $directory): bool
         }
     }
 
-    return rmdir($directory);
+    return rmdir($real);
 }
 
 // Limit string
@@ -527,5 +577,44 @@ function session(?string $key = null, mixed $default = null): mixed
         return $_SESSION;
     }
     return $_SESSION[$key] ?? $default;
+}
+
+function sessionSet(string $key, mixed $value): void
+{
+    $_SESSION[$key] = $value;
+}
+
+function sessionGet(string $key, mixed $default = null): mixed
+{
+    return $_SESSION[$key] ?? $default;
+}
+
+function sessionRemove(string $key): void
+{
+    unset($_SESSION[$key]);
+}
+
+// === CSRF Protection ===
+
+function csrf_token(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function csrf_verify(?string $token = null): bool
+{
+    $token = $token ?? inputPOST('csrf_token');
+    if (empty($token) || empty($_SESSION['csrf_token'])) {
+        return false;
+    }
+    return hash_equals($_SESSION['csrf_token'], $token);
+}
+
+function csrf_field(): string
+{
+    return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
 }
 

@@ -1,10 +1,13 @@
 <?php
+// Controller: Home
+// Gerado pelo Blumiga CLI e customizado
 
 namespace Blumiga\controllers\home;
 
 function index(): void
 {
     view('home', [
-        'titulo' => 'Blumiga — Documentação'
+        'titulo' => 'BluMiga — Microframework MVC para PHP',
+        'currentPage' => '/'
     ], 'layout');
 }

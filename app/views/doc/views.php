@@ -83,10 +83,10 @@ view('usuario/lista', compact('usuarios', 'total'));
 
 <span class="highlight">// Na view (usuario/lista.php)</span>
 ?&gt;
-&lt;h1&gt;Usuários (<?= e($total) ?>)&lt;/h1&gt;
+&lt;h1&gt;Usuários (&lt;?= e($total) ?&gt;)&lt;/h1&gt;
 &lt;ul&gt;
 &lt;?php foreach ($usuarios as $usuario): ?&gt;
-    &lt;li&gt;<?= e($usuario['nome']) ?&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;?= e($usuario['nome']) ?&gt;&lt;/li&gt;
 &lt;?php endforeach; ?&gt;
 &lt;/ul&gt;</code></pre>
         </div>
@@ -123,7 +123,7 @@ if (!defined('BLUMIGA')) exit;
     &lt;h2&gt;Features:&lt;/h2&gt;
     &lt;ul&gt;
     &lt;?php foreach ($features as $feature): ?&gt;
-        &lt;li&gt;<?= e($feature) ?&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;?= e($feature) ?&gt;&lt;/li&gt;
     &lt;?php endforeach; ?&gt;
     &lt;/ul&gt;
 &lt;/div&gt;</code></pre>

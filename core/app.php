@@ -2,9 +2,9 @@
 // Copyright (C) 2026 Murilo Gomes Julio
 // SPDX-License-Identifier: MIT
 
-// Site: https://www.bluice.com.br
+// Site: https://www.profmugomes.com.br
 
-if (!defined('blumiga')) exit;
+if (!defined('BLUMIGA')) exit;
 
 if ($blumigaDev) {
     error_reporting(E_ALL);

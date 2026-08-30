@@ -28,6 +28,10 @@ switch ($comando) {
 
     case 'serve':
         $porta = $parametro ?? '8080';
+        if (!ctype_digit((string)$porta) || (int)$porta < 1 || (int)$porta > 65535) {
+            die("\033[31mErro: Porta inválida. Use um número entre 1 e 65535.\033[0m\n");
+        }
+        $porta = (int)$porta;
         echo "\033[32m🚀 Iniciando o servidor de desenvolvimento do Blumiga...\033[0m\n";
         echo "Acesse: http://localhost:{$porta}\n";
         echo "Pressione Ctrl+C para encerrar.\n";
@@ -202,7 +206,19 @@ function exibirAjuda(): void {
     echo "  \033[32mhelp\033[0m                   Exibe este menu de ajuda.\n\n";
 }
 
+function validarNomeArquivo(string $nome): string {
+    $nome = basename($nome);
+    $nome = preg_replace('/[^a-zA-Z0-9_\/]/', '', $nome);
+    $nome = preg_replace('#/+#', '/', trim($nome, '/'));
+    $nome = str_replace(['..'], '', $nome);
+    if (empty($nome)) {
+        die("\033[31mErro: Nome inválido.\033[0m\n");
+    }
+    return $nome;
+}
+
 function criarController(string $nome): void {
+    $nome = validarNomeArquivo($nome);
     $diretorio = __DIR__ . '/app/controllers';
 
     $partes = explode('/', $nome);
@@ -237,6 +253,7 @@ function index(): void {
 }
 
 function criarModel(string $nome): void {
+    $nome = validarNomeArquivo($nome);
     $diretorio = __DIR__ . '/app/models';
     if (!is_dir($diretorio)) {
         mkdir($diretorio, 0755, true);
@@ -267,6 +284,7 @@ function getById(int \$id): array {
 }
 
 function criarView(string $nome): void {
+    $nome = validarNomeArquivo($nome);
     $diretorio = __DIR__ . '/app/views';
 
     $partes = explode('/', $nome);
@@ -308,6 +326,7 @@ if (!defined('BLUMIGA')) exit;
 }
 
 function criarMigration(string $nome): void {
+    $nome = validarNomeArquivo($nome);
     $diretorio = __DIR__ . '/app/database/migrations';
     if (!is_dir($diretorio)) {
         mkdir($diretorio, 0755, true);
@@ -345,6 +364,7 @@ return [
 }
 
 function criarSeeder(string $nome): void {
+    $nome = validarNomeArquivo($nome);
     $diretorio = __DIR__ . '/app/database/seeders';
     if (!is_dir($diretorio)) {
         mkdir($diretorio, 0755, true);
@@ -378,6 +398,7 @@ return [
 }
 
 function criarMiddleware(string $nome): void {
+    $nome = validarNomeArquivo($nome);
     $diretorio = __DIR__ . '/app/middleware';
     if (!is_dir($diretorio)) {
         mkdir($diretorio, 0755, true);

@@ -1,19 +1,24 @@
 <?php
-if (!defined('blumiga')) exit;
+if (!defined('BLUMIGA')) exit;
 
+// Página Inicial
 routeGET('/', 'home@index', 'home');
-routeGET('/exemplo/banco', 'exemplo@banco', 'exemplo.banco');
-routeGET('/exemplo/sessao', 'exemplo@sessao', 'exemplo.sessao');
-routeGET('/exemplo/helpers', 'exemplo@helpers', 'exemplo.helpers');
 
-routeGET('/login', 'auth@login', 'login');
-routePOST('/login', 'auth@logar', 'login.logar');
-routeGET('/logout', 'auth@logout', 'logout');
+// Documentação
+routeGROUP('/doc', '', function () {
+    routeGET('/', 'doc@index', 'doc.index');
+    routeGET('/instalacao', 'doc@instalacao', 'doc.instalacao');
+    routeGET('/rotas', 'doc@rotas', 'doc.rotas');
+    routeGET('/controllers', 'doc@controllers', 'doc.controllers');
+    routeGET('/views', 'doc@views', 'doc.views');
+    routeGET('/models', 'doc@models', 'doc.models');
+    routeGET('/middleware', 'doc@middleware', 'doc.middleware');
+    routeGET('/helpers', 'doc@helpers', 'doc.helpers');
+    routeGET('/cli', 'doc@cli', 'doc.cli');
+    routeGET('/seguranca', 'doc@seguranca', 'doc.seguranca');
+}, ['log@run']);
 
-routeGROUP('/admin', 'Admin', function () {
-    routeGET('/', 'dashboard@index', 'admin.home');
-}, ['auth@run', 'log@run']);
-
+// Página 404
 route404(function () {
     view('errors/404');
 });
