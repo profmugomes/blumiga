@@ -1,6 +1,6 @@
 # Blumiga
 
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.4-777bb4.svg)](https://www.php.net/)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.2-777bb4.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 O **Blumiga** é um microframework MVC para PHP desenvolvido utilizando programação procedural com conceitos inspirados em programação funcional.
@@ -77,7 +77,7 @@ Essa abordagem permite que cada projeto utilize apenas os componentes realmente 
 
 # Requisitos
 
-* PHP 8.4 ou superior
+* PHP 8.2 ou superior
 * Composer
 * Apache, Nginx ou qualquer servidor compatível com PHP
 
