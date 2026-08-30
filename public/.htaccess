@@ -12,19 +12,17 @@ Options -Indexes
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /
 
-    # Força WWW se não houver
+    # Força WWW + HTTPS em uma única regra (evita duplo redirect)
     RewriteCond %{HTTP_HOST} !^www\. [NC]
-    RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [R=301,L]
 
-    # Força HTTPS se o tráfego vier por HTTP (Porta 80)
+    # Força HTTPS quando já acessou via www mas sem HTTPS
+    RewriteCond %{HTTP_HOST} ^www\. [NC]
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
-</IfModule>
-
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /
 
     # Se o ativo estático (CSS, JS, Imagem) existir na pasta public, serve direto
     RewriteCond %{REQUEST_FILENAME} !-f
