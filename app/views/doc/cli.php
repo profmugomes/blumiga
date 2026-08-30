@@ -2,13 +2,12 @@
 <div class="doc-content">
     <h1>⌨️ CLI</h1>
     <p class="doc-intro">
-        O BluMiga oferece uma interface de linha de comando (CLI) para gerar código, 
-        gerenciar banco de dados e outras tarefas de desenvolvimento.
+        Interface de linha de comando para gerar código, gerenciar banco de dados e outras tarefas.
     </p>
 
     <section class="doc-section">
         <h2>🚀 Comandos Disponíveis</h2>
-        
+
         <table class="doc-table">
             <thead>
                 <tr>
@@ -18,48 +17,48 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><code>php blumiga serve</code></td>
-                    <td>Inicia o servidor de desenvolvimento local</td>
+                    <td><code>php blumiga serve [porta]</code></td>
+                    <td>Inicia o servidor de desenvolvimento (padrão: 8080)</td>
                 </tr>
                 <tr>
-                    <td><code>php blumiga make:controller</code></td>
-                    <td>Cria um novo controller</td>
+                    <td><code>php blumiga make:controller nome</code></td>
+                    <td>Cria um novo controller em <code>app/controllers/</code></td>
                 </tr>
                 <tr>
-                    <td><code>php blumiga make:model</code></td>
-                    <td>Cria um novo model</td>
+                    <td><code>php blumiga make:model nome</code></td>
+                    <td>Cria um novo model em <code>app/models/</code></td>
                 </tr>
                 <tr>
-                    <td><code>php blumiga make:middleware</code></td>
-                    <td>Cria um novo middleware</td>
+                    <td><code>php blumiga make:view nome</code></td>
+                    <td>Cria uma nova view em <code>app/views/</code></td>
                 </tr>
                 <tr>
-                    <td><code>php blumiga make:view</code></td>
-                    <td>Cria uma nova view</td>
+                    <td><code>php blumiga make:middleware nome</code></td>
+                    <td>Cria um novo middleware em <code>app/middleware/</code></td>
                 </tr>
                 <tr>
-                    <td><code>php blumiga make:migration</code></td>
-                    <td>Cria uma nova migration</td>
+                    <td><code>php blumiga make:migration nome</code></td>
+                    <td>Cria uma migration em <code>app/database/migrations/</code></td>
+                </tr>
+                <tr>
+                    <td><code>php blumiga make:seeder nome</code></td>
+                    <td>Cria um seeder em <code>app/database/seeders/</code></td>
                 </tr>
                 <tr>
                     <td><code>php blumiga migrate</code></td>
-                    <td>Executa as migrations pendentes</td>
+                    <td>Executa as funções <code>up</code> de todas as migrations</td>
                 </tr>
                 <tr>
                     <td><code>php blumiga migrate:rollback</code></td>
-                    <td>Reverte a última migration</td>
+                    <td>Executa as funções <code>down</code> das migrations (ordem reversa)</td>
                 </tr>
                 <tr>
-                    <td><code>php blumiga db:seed</code></td>
-                    <td>Popula o banco com dados de teste</td>
+                    <td><code>php blumiga db:seed [nome]</code></td>
+                    <td>Alimenta o banco executando as funções <code>run</code></td>
                 </tr>
                 <tr>
-                    <td><code>php blumiga db:reset</code></td>
-                    <td>Reset e recria o banco de dados</td>
-                </tr>
-                <tr>
-                    <td><code>php blumiga version</code></td>
-                    <td>Exibe a versão do BluMiga</td>
+                    <td><code>php blumiga db:seed:rollback [nome]</code></td>
+                    <td>Limpa dados executando as funções <code>down</code> dos seeders</td>
                 </tr>
                 <tr>
                     <td><code>php blumiga route:list</code></td>
@@ -67,15 +66,19 @@
                 </tr>
                 <tr>
                     <td><code>php blumiga clear:cache</code></td>
-                    <td>Limpa o cache da aplicação</td>
+                    <td>Limpa OPcache e arquivos do <code>storage/cache/</code></td>
                 </tr>
                 <tr>
-                    <td><code>php blumiga clear:logs</code></td>
-                    <td>Limpa os arquivos de log</td>
+                    <td><code>php blumiga version</code></td>
+                    <td>Exibe a versão do Blumiga</td>
                 </tr>
                 <tr>
-                    <td><code>php blumiga key:generate</code></td>
-                    <td>Gera uma nova chave de criptografia</td>
+                    <td><code>php blumiga key:generate [tamanho]</code></td>
+                    <td>Gera uma chave de criptografia segura</td>
+                </tr>
+                <tr>
+                    <td><code>php blumiga help</code></td>
+                    <td>Exibe o menu de ajuda</td>
                 </tr>
             </tbody>
         </table>
@@ -83,109 +86,64 @@
 
     <section class="doc-section">
         <h2>▶️ Servidor de Desenvolvimento</h2>
-        <p>Inicie o servidor local para desenvolvimento:</p>
-        
         <div class="code-block">
-            <pre><code><span class="highlight"># Iniciar na porta padrão (8000)</span>
+            <pre><code><span class="highlight"># Porta padrão (8080)</span>
 php blumiga serve
 
-<span class="highlight"># Iniciar em porta específica</span>
-php blumiga serve --port=3000
-
-<span class="highlight"># Iniciar acessível na rede</span>
-php blumiga serve --host=0.0.0.0</code></pre>
+<span class="highlight"># Porta específica (validação: 1-65535)</span>
+php blumiga serve 3000</code></pre>
         </div>
-        
-        <p>Acesse <code>http://localhost:8000</code> no navegador.</p>
     </section>
 
     <section class="doc-section">
         <h2>🔧 Gerando Código</h2>
-        
-        <h3>Controller</h3>
+
         <div class="code-block">
-            <pre><code><span class="highlight"># Criar controller</span>
+            <pre><code><span class="highlight"># Controller — app/controllers/usuario.php</span>
 php blumiga make:controller usuario
 
-<span class="highlight"># Resultado: app/controllers/usuario.php</span></code></pre>
-        </div>
+<span class="highlight"># Controller com subpasta — app/controllers/admin/dashboard.php</span>
+php blumiga make:controller admin/dashboard
 
-        <h3>Model</h3>
-        <div class="code-block">
-            <pre><code><span class="highlight"># Criar model</span>
+<span class="highlight"># Model — app/models/usuarioModel.php</span>
 php blumiga make:model usuario
 
-<span class="highlight"># Resultado: app/models/usuario.php</span></code></pre>
-        </div>
-
-        <h3>Middleware</h3>
-        <div class="code-block">
-            <pre><code><span class="highlight"># Criar middleware</span>
-php blumiga make:middleware auth
-
-<span class="highlight"># Resultado: app/middleware/auth.php</span></code></pre>
-        </div>
-
-        <h3>View</h3>
-        <div class="code-block">
-            <pre><code><span class="highlight"># Criar view</span>
+<span class="highlight"># View — app/views/usuario/lista.php</span>
 php blumiga make:view usuario/lista
 
-<span class="highlight"># Resultado: app/views/usuario/lista.php</span></code></pre>
+<span class="highlight"># Middleware — app/middleware/auth.php</span>
+php blumiga make:middleware auth
+
+<span class="highlight"># Migration — app/database/migrations/2026_08_30_criar_usuarios.php</span>
+php blumiga make:migration criar_usuarios
+
+<span class="highlight"># Seeder — app/database/seeders/usuariosSeeder.php</span>
+php blumiga make:seeder usuarios</code></pre>
         </div>
 
-        <h3>Migration</h3>
-        <div class="code-block">
-            <pre><code><span class="highlight"># Criar migration</span>
-php blumiga make:migration criar_tabela_usuarios
-
-<span class="highlight"># Resultado: database/migrations/2024_01_01_criar_tabela_usuarios.php</span></code></pre>
+        <div class="alert alert-info">
+            <strong>ℹ️ Segurança:</strong> Nomes são sanitizados automaticamente — apenas letras, números, underscores e barras são aceitos.
         </div>
     </section>
 
     <section class="doc-section">
         <h2>💾 Banco de Dados</h2>
-        
-        <h3>Migrations</h3>
+
         <div class="code-block">
-            <pre><code><span class="highlight"># Executar migrations pendentes</span>
+            <pre><code><span class="highlight"># Executar todas as migrations</span>
 php blumiga migrate
 
-<span class="highlight"># Reverter última migration</span>
+<span class="highlight"># Reverter todas as migrations (ordem reversa)</span>
 php blumiga migrate:rollback
 
-<span class="highlight"># Reverter todas as migrations</span>
-php blumiga migrate:reset</code></pre>
-        </div>
-
-        <h3>Seeding</h3>
-        <div class="code-block">
-            <pre><code><span class="highlight"># Popular banco com dados de teste</span>
+<span class="highlight"># Popular banco com todos os seeders</span>
 php blumiga db:seed
 
-<span class="highlight"># Resetar e recriar banco</span>
-php blumiga db:reset</code></pre>
-        </div>
-    </section>
+<span class="highlight"># Popular seeder específico</span>
+php blumiga db:seed usuarios
 
-    <section class="doc-section">
-        <h2>🔧 Outros Comandos Úteis</h2>
-        
-        <div class="code-block">
-            <pre><code><span class="highlight"># Ver versão do BluMiga</span>
-php blumiga version
-
-<span class="highlight"># Listar todas as rotas</span>
-php blumiga route:list
-
-<span class="highlight"># Limpar cache</span>
-php blumiga clear:cache
-
-<span class="highlight"># Limpar logs</span>
-php blumiga clear:logs
-
-<span class="highlight"># Gerar nova chave de criptografia</span>
-php blumiga key:generate</code></pre>
+<span class="highlight"># Reverter seeder específico</span>
+php blumiga db:seed:rollback usuarios</code></pre>
         </div>
     </section>
 
@@ -195,6 +153,7 @@ php blumiga key:generate</code></pre>
             <li>Use <code>make:*</code> para gerar código boilerplate rapidamente</li>
             <li>Execute <code>migrate</code> antes de <code>db:seed</code> para garantir que as tabelas existam</li>
             <li>Use <code>route:list</code> para verificar se suas rotas estão corretas</li>
+            <li>Use <code>clear:cache</code> após mudanças em configurações</li>
             <li>Em produção, desative o servidor de desenvolvimento</li>
         </ul>
     </section>

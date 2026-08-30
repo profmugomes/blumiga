@@ -3,300 +3,119 @@
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.2-777bb4.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-O **Blumiga** é um microframework MVC para PHP desenvolvido utilizando programação procedural com conceitos inspirados em programação funcional.
+Microframework MVC para PHP com programação procedural e conceitos funcionais.
 
-Seu objetivo é oferecer apenas o essencial para estruturar aplicações web, mantendo um núcleo pequeno, rápido e fácil de entender.
-
-Diferentemente de frameworks que incluem autenticação, ORM, cache, filas e diversos outros recursos por padrão, o Blumiga fornece somente a base da aplicação. Todo o restante pode ser adicionado através de bibliotecas independentes, sejam elas oficiais do ecossistema Blumiga ou de terceiros.
-
-A proposta é simples:
-
-> **Fornecer um núcleo sólido para que cada desenvolvedor monte apenas o framework que realmente precisa.**
+> Fornecer um núcleo sólido para que cada desenvolvedor monte apenas o framework que realmente precisa.
 
 ---
 
-# Filosofia
+## Requisitos
 
-O Blumiga segue alguns princípios fundamentais:
-
-* MVC simples e objetivo
-* Programação procedural organizada
-* Conceitos inspirados em programação funcional
-* Arquitetura modular
-* Baixo consumo de memória
-* Baixa quantidade de dependências
-* Compatível com Composer
-* Compatível com bibliotecas PSR
-* Sem funcionalidades desnecessárias no núcleo
+* PHP 8.2 ou superior
+* Composer
+* ext-intl (opcional)
+* Apache, Nginx ou PHP built-in server
 
 ---
 
-# O que faz parte do núcleo
+## Instalação
 
-O núcleo do Blumiga é composto apenas pelos recursos necessários para iniciar uma aplicação MVC.
+```bash
+composer create-project profmugomes/blumiga meu-projeto
+cd meu-projeto
+php blumiga serve
+```
 
-* Sistema de rotas
-* Dispatcher
-* Controllers
-* Models
-* Views
-* Helpers
-* Configuração
-* Middlewares
-* Tratamento de erros
+Acesse `http://localhost:8080`.
+
+---
+
+## Núcleo do Framework
+
+* Rotas com parâmetros, grupos e middlewares
+* Controllers com namespaces (procedural)
+* Models com proteção Path Traversal
+* Views com layouts e escape XSS (`e()`, `eJS()`)
+* CSRF Protection (`csrf_token()`, `csrf_verify()`, `csrf_field()`)
+* Headers de segurança configuráveis (CSP, HSTS, X-Frame-Options)
+* Sessão segura (httponly, secure, samesite, strict mode)
+* Criptografia AES-256-CBC + HMAC-SHA256
+* Helpers: redirect, session, input, asset, slug, generatePassword
+* CLI com 16 comandos
 * Autoload via Composer
 
 ---
 
-# O que não faz parte do núcleo
-
-O Blumiga não possui estes recursos por padrão.
-
-Eles podem ser adicionados posteriormente utilizando bibliotecas independentes.
-
-* Autenticação
-* Autorização
-* Sessão
-* Cache
-* CSRF
-* Rate Limiter
-* ORM
-* Query Builder
-* Logger
-* Mail
-* Upload
-* Eventos
-* Filas
-* OAuth
-* API Resources
-* WebSockets
-
-Essa abordagem permite que cada projeto utilize apenas os componentes realmente necessários.
-
----
-
-# Requisitos
-
-* PHP 8.2 ou superior
-* Composer
-* Apache, Nginx ou qualquer servidor compatível com PHP
-
----
-
-# Instalação
-
-```bash
-composer create-project profmugomes/blumiga meu-projeto
-```
-
----
-
-# Estrutura do projeto
+## Estrutura
 
 ```text
 meu-projeto/
 ├── app/
 │   ├── controllers/
+│   ├── middleware/
 │   ├── models/
 │   └── views/
-│
 ├── config/
 │   ├── config.php
 │   └── routes.php
-│
 ├── core/
-│
 ├── public/
+│   ├── .htaccess
 │   └── index.php
-│
 ├── storage/
-│
 ├── vendor/
-│
 └── composer.json
 ```
 
 ---
 
-# Criando uma rota
+## Documentação
 
-```php
-routeGET('/', 'HomeController@index');
+Inicie o servidor de desenvolvimento e acesse as páginas de documentação:
 
-routeGET('/contato', 'ContatoController@index');
-
-routeGET('/produto/{id}', 'ProdutoController@show');
-
-routePOST('/login', 'LoginController@store');
-```
-
-Também é possível criar grupos de rotas.
-
-```php
-routeGroup('/admin', 'admin', function () {
-
-    routeGET('/dashboard', 'DashboardController@index');
-
-    routeGET('/usuarios', 'UsuarioController@index');
-
-});
-```
-
-Página 404 personalizada.
-
-```php
-route404(function () {
-
-    view('errors/404');
-
-});
-```
+| Página | URL |
+|--------|-----|
+| Início | `/` |
+| Instalação | `/doc/instalacao` |
+| Rotas | `/doc/rotas` |
+| Controllers | `/doc/controllers` |
+| Views | `/doc/views` |
+| Models | `/doc/models` |
+| Middleware | `/doc/middleware` |
+| Helpers | `/doc/helpers` |
+| CLI | `/doc/cli` |
+| Segurança | `/doc/seguranca` |
 
 ---
 
-# Controllers
-
-```php
-<?php
-
-namespace App\Controllers;
-
-function index(): void
-{
-    view('home', [
-        'titulo' => 'Bem-vindo ao Blumiga'
-    ]);
-}
-```
-
----
-
-# Models
-
-```php
-<?php
-
-namespace App\Models;
-
-function listarUsuarios(): array
-{
-    return [];
-}
-```
-
----
-
-# Views
-
-```php
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-    <title><?= e($titulo) ?></title>
-
-</head>
-
-<body>
-
-<h1><?= e($titulo) ?></h1>
-
-</body>
-
-</html>
-```
-
----
-
-# Helpers
-
-Exemplo de escape para HTML.
-
-```php
-echo e($nome);
-```
-
-Renderização de views.
-
-```php
-view('home');
-```
-
-Renderização passando dados.
-
-```php
-view('produto', [
-
-    'produto' => $produto
-
-]);
-```
-
----
-
-# Bibliotecas
-
-O Blumiga foi projetado para ser modular.
-
-Você pode instalar apenas os componentes necessários.
-
-Exemplo utilizando bibliotecas do ecossistema Blumiga.
+## CLI
 
 ```bash
-composer require blumiga/auth
-composer require blumiga/session
-composer require blumiga/cache
-composer require blumiga/validation
+php blumiga serve [porta]          # Servidor de desenvolvimento
+php blumiga make:controller nome   # Criar controller
+php blumiga make:model nome        # Criar model
+php blumiga make:view nome         # Criar view
+php blumiga make:middleware nome   # Criar middleware
+php blumiga make:migration nome    # Criar migration
+php blumiga make:seeder nome       # Criar seeder
+php blumiga migrate                # Executar migrations
+php blumiga migrate:rollback       # Reverter migrations
+php blumiga db:seed [nome]         # Executar seeders
+php blumiga route:list             # Listar rotas
+php blumiga clear:cache            # Limpar cache
+php blumiga version                # Versão
+php blumiga key:generate           # Gerar chave de criptografia
 ```
 
-Ou utilizar bibliotecas de terceiros.
-
-```bash
-composer require symfony/security-core
-composer require symfony/http-foundation
-composer require monolog/monolog
-```
-
-Nada impede que o projeto utilize qualquer biblioteca compatível com Composer.
-
 ---
 
-# Objetivos do projeto
+## Patrocínio
 
-* Ser simples de aprender
-* Ser leve
-* Ser rápido
-* Ser previsível
-* Ser modular
-* Dar liberdade ao desenvolvedor
-* Evitar dependências desnecessárias
-* Facilitar manutenção de aplicações PHP
+Se este projeto te ajuda, considere apoiar:
 
----
+[![Sponsor](https://img.shields.io/badge/Sponsor-profmugomes-red?logo=github)](https://github.com/sponsors/profmugomes)
 
-# Roadmap
-
-* Sistema de rotas
-* MVC
-* Helpers
-* Middlewares
-* Sistema de Views
-* Biblioteca de Autenticação
-* Biblioteca de Sessões
-* Biblioteca de Cache
-* Biblioteca de Banco de Dados
-* Biblioteca de Validação
-* Biblioteca de Logs
-
----
-
-# Contribuindo
-
-Contribuições são bem-vindas.
-
-Antes de enviar alterações, abra uma Issue para discutir mudanças significativas.
+[GitHub Sponsors — github.com/sponsors/profmugomes](https://github.com/sponsors/profmugomes)
 
 ---
 

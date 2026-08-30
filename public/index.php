@@ -50,8 +50,17 @@ if (!empty($headersConfig) && is_array($headersConfig)) {
 
 // Configurações seguras de sessão (configuráveis via config.php)
 if (!empty($sessionConfig) && is_array($sessionConfig)) {
+    $allowedSession = [
+        'cookie_httponly', 'cookie_secure', 'cookie_samesite',
+        'cookie_path', 'cookie_domain', 'cookie_lifetime',
+        'use_strict_mode', 'use_only_cookies', 'use_trans_sid',
+        'sid_length', 'sid_bits_per_character',
+        'gc_maxlifetime', 'gc_probability', 'gc_divisor',
+    ];
     foreach ($sessionConfig as $iniKey => $iniValue) {
-        ini_set('session.' . $iniKey, $iniValue);
+        if (in_array($iniKey, $allowedSession, true)) {
+            ini_set('session.' . $iniKey, $iniValue);
+        }
     }
 }
 
