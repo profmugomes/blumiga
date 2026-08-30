@@ -3,7 +3,7 @@
 [![CI](https://github.com/profmugomes/blumiga/actions/workflows/ci.yml/badge.svg)](https://github.com/profmugomes/blumiga/actions/workflows/ci.yml)
 [![PHPStan](https://github.com/profmugomes/blumiga/actions/workflows/ci.yml/badge.svg?job=phpstan)](https://github.com/profmugomes/blumiga/actions/workflows/ci.yml?query=job%3Aphpstan)
 [![PHPUnit](https://github.com/profmugomes/blumiga/actions/workflows/ci.yml/badge.svg?job=phpunit)](https://github.com/profmugomes/blumiga/actions/workflows/ci.yml?query=job%3Aphpunit)
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.2-777bb4.svg)](https://www.php.net/)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.4-777bb4.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Microframework MVC procedural para PHP, com suporte a MySQL/MariaDB via BlumigaDB.
