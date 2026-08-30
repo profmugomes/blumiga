@@ -86,7 +86,7 @@ Essa abordagem permite que cada projeto utilize apenas os componentes realmente 
 # Instalação
 
 ```bash
-composer create-project bluiceoficial/blumiga meu-projeto
+composer create-project profmugomes/blumiga meu-projeto
 ```
 
 ---
@@ -304,9 +304,9 @@ Antes de enviar alterações, abra uma Issue para discutir mudanças significati
 
 **Murilo Gomes Julio**
 
-🌐 https://www.bluice.com.br
+🌐 https://www.profmugomes.com.br
 
-📺 https://youtube.com/@bluiceoficial
+📺 https://youtube.com/@profmugomes
 
 
 ---
@@ -315,6 +315,6 @@ Antes de enviar alterações, abra uma Issue para discutir mudanças significati
 
 The Blumiga is provided under:
 
-[SPDX-License-Identifier: MIT](https://github.com/bluiceoficial/blumiga/blob/main/LICENSE)
+[SPDX-License-Identifier: MIT](https://github.com/profmugomes/blumiga/blob/main/LICENSE)
 
 All contributions to the Blumiga are subject to this license.
