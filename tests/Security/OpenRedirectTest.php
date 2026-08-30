@@ -8,63 +8,81 @@ class OpenRedirectTest extends TestCase
 {
     protected function setUp(): void
     {
-        $_SERVER['HTTP_HOST'] = 'meusite.com';
+        $_SERVER['HTTP_HOST'] = 'teste.localhost';
+    }
+
+    /**
+     * Reproduz a lógica de validação do redirect() sem chamar exit.
+     */
+    private function simulateRedirect(string $url): string
+    {
+        $parsed = parse_url($url);
+        $currentHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+        if (isset($parsed['host']) && $parsed['host'] !== $currentHost) {
+            return '/';
+        }
+
+        if (isset($parsed['scheme']) && !in_array($parsed['scheme'], ['http', 'https', ''], true)) {
+            return '/';
+        }
+
+        return $url;
     }
 
     public function testRedirectSameHostAllowed(): void
     {
-        $url = 'https://meusite.com/pagina';
-        $parsed = parse_url($url);
-        $currentHost = $_SERVER['HTTP_HOST'];
-
-        // Verifica que URL do mesmo host não é bloqueada
-        $this->assertSame($currentHost, $parsed['host'] ?? '');
+        $url = 'https://teste.localhost/pagina';
+        $result = $this->simulateRedirect($url);
+        $this->assertSame($url, $result);
     }
 
     public function testRedirectDifferentHostIsBlocked(): void
     {
-        $url = 'https://evil.com/hack';
-        $parsed = parse_url($url);
-        $currentHost = $_SERVER['HTTP_HOST'];
-
-        // Verifica que host diferente seria bloqueado
-        $this->assertNotSame($currentHost, $parsed['host'] ?? '');
+        $url = 'https://teste.localhost.atacante/hack';
+        $result = $this->simulateRedirect($url);
+        $this->assertSame('/', $result);
     }
 
-    public function testRedirectRelativeUrlHasNoHost(): void
+    public function testRedirectExternalHostIsBlocked(): void
+    {
+        $url = 'https://externo teste.localhost/falso';
+        $result = $this->simulateRedirect($url);
+        $this->assertSame('/', $result);
+    }
+
+    public function testRedirectRelativeUrlAllowed(): void
     {
         $url = '/dashboard';
-        $parsed = parse_url($url);
+        $result = $this->simulateRedirect($url);
+        $this->assertSame($url, $result);
+    }
 
-        // URL relativa não tem host, logo não é bloqueada
-        $this->assertArrayNotHasKey('host', $parsed);
+    public function testRedirectRelativeWithParamsAllowed(): void
+    {
+        $url = '/busca?q=termo&page=2';
+        $result = $this->simulateRedirect($url);
+        $this->assertSame($url, $result);
     }
 
     public function testRedirectJavascriptSchemeIsBlocked(): void
     {
         $url = 'javascript:alert(1)';
-        $parsed = parse_url($url);
-
-        // scheme javascript: não está na lista de permitidos
-        $allowedSchemes = ['http', 'https', ''];
-        $this->assertNotContains($parsed['scheme'] ?? '', $allowedSchemes);
+        $result = $this->simulateRedirect($url);
+        $this->assertSame('/', $result);
     }
 
-    public function testRedirectWithArrayParams(): void
+    public function testRedirectDataSchemeIsBlocked(): void
     {
-        $url = '/busca';
-        $params = ['q' => 'termo', 'page' => 2];
-        $url .= '?' . http_build_query($params);
-
-        $this->assertStringContainsString('q=termo', $url);
-        $this->assertStringContainsString('page=2', $url);
+        $url = 'data:text/html,<script>alert(1)</script>';
+        $result = $this->simulateRedirect($url);
+        $this->assertSame('/', $result);
     }
 
     public function testRedirectParamsBuildQuery(): void
     {
         $params = ['q' => 'termo'];
         $query = http_build_query($params);
-
         $this->assertSame('q=termo', $query);
     }
 }
