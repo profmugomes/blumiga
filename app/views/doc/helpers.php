@@ -61,6 +61,31 @@ $original = decrypt($token, 'minha-chave');</code></pre>
     </section>
 
     <section class="doc-section">
+        <h2>💾 Models</h2>
+
+        <h3>model()</h3>
+        <p>Carrega o arquivo do model e retorna o namespace para chamada de funções:</p>
+        <div class="code-block">
+            <pre><code><span class="highlight">// Obter namespace do model</span>
+$ns = model('usuario');
+<span class="highlight">// Retorna: \Blumiga\models\usuario\</span>
+
+<span class="highlight">// Chamar funções do model com interpolação</span>
+$usuarios = "{$ns}listar"();
+$usuario = "{$ns}buscarPorId"($id);
+$criado = "{$ns}criar"($nome, $email);
+
+<span class="highlight">// Como funciona internamente</span>
+<span class="highlight">// model('usuario') → '\Blumiga\models\usuario\'</span>
+<span class="highlight">// "{$ns}listar"() → '\Blumiga\models\usuario\listar'()</span></code></pre>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>ℹ️ Padrão BluMiga:</strong> Como o framework é procedural, usamos interpolação de string para chamar funções. <code>"{$ns}funcao"()</code> executa a função retornada pelo namespace.
+        </div>
+    </section>
+
+    <section class="doc-section">
         <h2>🔄 Redirecionamento</h2>
 
         <h3>redirect()</h3>
@@ -90,7 +115,7 @@ redirect(route('dashboard'));</code></pre>
     </section>
 
     <section class="doc-section">
-        <h2>📦 Sessão</h2>
+        <h2>🎲 Geração de Dados</h2>
 
         <div class="code-block">
             <pre><code><span class="highlight">// Ler valor da sessão</span>
@@ -196,6 +221,7 @@ $cssUrl = asset('assets/css/style.css');
                 </tr>
             </thead>
             <tbody>
+                <tr><td><code>model($name)</code></td><td>Carrega model e retorna namespace</td></tr>
                 <tr><td><code>e($var)</code></td><td>Escape HTML (XSS)</td></tr>
                 <tr><td><code>eJS($var)</code></td><td>Escape JavaScript</td></tr>
                 <tr><td><code>csrf_token()</code></td><td>Gera token CSRF</td></tr>

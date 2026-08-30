@@ -2,7 +2,7 @@
 <section class="hero">
     <h1>⚡ <span>BluMiga</span></h1>
     <p>Microframework MVC para PHP — Leve, rápido e procedural.</p>
-    <a href="/doc/instalacao" class="hero-btn">🚀 Ver Documentação</a>
+    <a href="<?= route('doc.instalacao') ?>" class="hero-btn">🚀 Ver Documentação</a>
 </section>
 
 <section class="doc-content">
@@ -64,32 +64,32 @@ http://localhost:8080</code>
     </div>
 
     <div class="cards-grid" style="margin-top: 2rem;">
-        <a href="/doc/instalacao" class="card">
+        <a href="<?= route('doc.instalacao') ?>" class="card">
             <span class="card-icon">📦</span>
             <h3>Instalação</h3>
             <p>Como instalar e configurar o BluMiga no seu projeto.</p>
         </a>
-        <a href="/doc/rotas" class="card">
+        <a href="<?= route('doc.rotas') ?>" class="card">
             <span class="card-icon">🗺️</span>
             <h3>Rotas</h3>
             <p>Sistema de rotas, grupos e parâmetros.</p>
         </a>
-        <a href="/doc/controllers" class="card">
+        <a href="<?= route('doc.controllers') ?>" class="card">
             <span class="card-icon">🎮</span>
             <h3>Controllers</h3>
             <p>Como criar e organizar controllers.</p>
         </a>
-        <a href="/doc/views" class="card">
+        <a href="<?= route('doc.views') ?>" class="card">
             <span class="card-icon">🎨</span>
             <h3>Views</h3>
             <p>Sistema de views e layouts.</p>
         </a>
-        <a href="/doc/helpers" class="card">
+        <a href="<?= route('doc.helpers') ?>" class="card">
             <span class="card-icon">🛠️</span>
             <h3>Helpers</h3>
             <p>Funções auxiliares do framework.</p>
         </a>
-        <a href="/doc/cli" class="card">
+        <a href="<?= route('doc.cli') ?>" class="card">
             <span class="card-icon">⌨️</span>
             <h3>CLI</h3>
             <p>Comandos de linha de comando.</p>

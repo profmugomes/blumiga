@@ -27,40 +27,40 @@
         <nav class="sidebar-nav">
             <div class="sidebar-nav-section">
                 <div class="sidebar-nav-section-title">Principal</div>
-                <a href="/" class="<?= ($currentPage ?? '') === '/' ? 'active' : '' ?>">
+                <a href="<?= route('home') ?>" class="<?= ($currentPage ?? '') === '/' ? 'active' : '' ?>">
                     <span class="nav-icon">🏠</span> Início
                 </a>
             </div>
             <div class="sidebar-nav-section">
                 <div class="sidebar-nav-section-title">Guia</div>
-                <a href="/doc/instalacao" class="<?= ($currentPage ?? '') === '/doc/instalacao' ? 'active' : '' ?>">
+                <a href="<?= route('doc.instalacao') ?>" class="<?= ($currentPage ?? '') === '/doc/instalacao' ? 'active' : '' ?>">
                     <span class="nav-icon">📦</span> Instalação
                 </a>
-                <a href="/doc/rotas" class="<?= ($currentPage ?? '') === '/doc/rotas' ? 'active' : '' ?>">
+                <a href="<?= route('doc.rotas') ?>" class="<?= ($currentPage ?? '') === '/doc/rotas' ? 'active' : '' ?>">
                     <span class="nav-icon">🛤️</span> Rotas
                 </a>
-                <a href="/doc/controllers" class="<?= ($currentPage ?? '') === '/doc/controllers' ? 'active' : '' ?>">
+                <a href="<?= route('doc.controllers') ?>" class="<?= ($currentPage ?? '') === '/doc/controllers' ? 'active' : '' ?>">
                     <span class="nav-icon">🎮</span> Controllers
                 </a>
-                <a href="/doc/views" class="<?= ($currentPage ?? '') === '/doc/views' ? 'active' : '' ?>">
+                <a href="<?= route('doc.views') ?>" class="<?= ($currentPage ?? '') === '/doc/views' ? 'active' : '' ?>">
                     <span class="nav-icon">🎨</span> Views
                 </a>
-                <a href="/doc/models" class="<?= ($currentPage ?? '') === '/doc/models' ? 'active' : '' ?>">
+                <a href="<?= route('doc.models') ?>" class="<?= ($currentPage ?? '') === '/doc/models' ? 'active' : '' ?>">
                     <span class="nav-icon">💾</span> Models
                 </a>
-                <a href="/doc/middleware" class="<?= ($currentPage ?? '') === '/doc/middleware' ? 'active' : '' ?>">
+                <a href="<?= route('doc.middleware') ?>" class="<?= ($currentPage ?? '') === '/doc/middleware' ? 'active' : '' ?>">
                     <span class="nav-icon">🛡️</span> Middleware
                 </a>
             </div>
             <div class="sidebar-nav-section">
                 <div class="sidebar-nav-section-title">Referência</div>
-                <a href="/doc/helpers" class="<?= ($currentPage ?? '') === '/doc/helpers' ? 'active' : '' ?>">
+                <a href="<?= route('doc.helpers') ?>" class="<?= ($currentPage ?? '') === '/doc/helpers' ? 'active' : '' ?>">
                     <span class="nav-icon">🛠️</span> Helpers
                 </a>
-                <a href="/doc/cli" class="<?= ($currentPage ?? '') === '/doc/cli' ? 'active' : '' ?>">
+                <a href="<?= route('doc.cli') ?>" class="<?= ($currentPage ?? '') === '/doc/cli' ? 'active' : '' ?>">
                     <span class="nav-icon">⌨️</span> CLI
                 </a>
-                <a href="/doc/seguranca" class="<?= ($currentPage ?? '') === '/doc/seguranca' ? 'active' : '' ?>">
+                <a href="<?= route('doc.seguranca') ?>" class="<?= ($currentPage ?? '') === '/doc/seguranca' ? 'active' : '' ?>">
                     <span class="nav-icon">🔒</span> Segurança
                 </a>
             </div>

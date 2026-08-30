@@ -36,19 +36,28 @@
 
     <section class="doc-section">
         <h2>🎯 Usando Models</h2>
-        <p>Acesse models usando a função <code>model()</code>:</p>
+        <p>A função <code>model()</code> retorna o namespace do model. Use interpolação de string para chamar as funções:</p>
         
         <div class="code-block">
             <pre><code><span class="highlight">// Obter namespace do model</span>
-$usuarioModel = model('usuario');
+$ns = model('usuario');
 
-<span class="highlight">// Chamar funções do model</span>
-$usuarios = $usuarioModel->listar();
-$usuario = $usuarioModel->buscarPorId(1);
+<span class="highlight">// Chamar funções do model com interpolação</span>
+$usuarios = "{$ns}listar"();
+$usuario = "{$ns}buscarPorId"(1);
 
-<span class="highlight">// Ou use diretamente</span>
-$usuarios = model('usuario')->listar();
-$produto = model('produto')->buscarPorSlug('meu-produto');</code></pre>
+<span class="highlight">// Com parâmetros</span>
+$usuario = "{$ns}buscarPorId"($id);
+$criado = "{$ns}criar"($nome, $email);
+
+<span class="highlight">// Exemplo completo em um controller</span>
+$ns = model('usuario');
+$lista = "{$ns}listar"();
+$total = "{$ns}contar"();</code></pre>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>ℹ️ Como funciona:</strong> <code>model('usuario')</code> retorna <code>\Blumiga\models\usuario\</code>. Ao usar <code>"{$ns}listar"()</code>, o PHP interpola a string e executa a função.
         </div>
     </section>
 
@@ -120,15 +129,17 @@ $produto = model('produto')->buscarPorSlug('meu-produto');</code></pre>
 <span class="highlight">namespace</span> Blumiga\controllers\usuario;
 
 <span class="highlight">function</span> index(): <span class="highlight">void</span> {
-    $usuarios = model('usuario')->listar();
+    $ns = model('usuario');
+    $usuarios = "{$ns}listar"();
     view('usuario/lista', compact('usuarios'));
 }
 
 <span class="highlight">function</span> show($id): <span class="highlight">void</span> {
-    $usuario = model('usuario')->buscarPorId($id);
+    $ns = model('usuario');
+    $usuario = "{$ns}buscarPorId"($id);
     
     <span class="highlight">if</span> (!$usuario) {
-        session('error', 'Usuário não encontrado');
+        sessionSet('error', 'Usuário não encontrado');
         redirect('/usuarios');
         <span class="highlight">return</span>;
     }
@@ -137,15 +148,16 @@ $produto = model('produto')->buscarPorSlug('meu-produto');</code></pre>
 }
 
 <span class="highlight">function</span> store(): <span class="highlight">void</span> {
+    $ns = model('usuario');
     $nome = inputPOST('nome');
     $email = inputPOST('email');
     $senha = inputPOST('senha');
     
-    <span class="highlight">if</span> (model('usuario')->criar($nome, $email, $senha)) {
-        session('success', 'Usuário criado com sucesso!');
+    <span class="highlight">if</span> ("{$ns}criar"($nome, $email, $senha)) {
+        sessionSet('success', 'Usuário criado com sucesso!');
         redirect('/usuarios');
     } <span class="highlight">else</span> {
-        session('error', 'Erro ao criar usuário');
+        sessionSet('error', 'Erro ao criar usuário');
         redirect('/usuarios/novo');
     }
 }</code></pre>
@@ -159,6 +171,7 @@ $produto = model('produto')->buscarPorSlug('meu-produto');</code></pre>
             <li>Use <code>password_hash()</code> para senhas, nunca armazene em texto puro</li>
             <li>Valide dados antes de inserir no banco</li>
             <li>Use transactions para operações que envolvem múltiplas tabelas</li>
+            <li>Sempre use <code>model('nome')</code> para obter o namespace antes de chamar funções</li>
         </ul>
     </section>
 </div>

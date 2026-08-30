@@ -88,18 +88,18 @@
 <span class="highlight">namespace</span> Blumiga\controllers\usuario;
 
 <span class="highlight">function</span> show($id): <span class="highlight">void</span> {
-    <span class="highlight">// Buscar usuário pelo ID</span>
-    $usuario = model('usuario')->buscarPorId($id);
+    $ns = model('usuario');
+    $usuario = "{$ns}buscarPorId"($id);
     
     view('usuario/show', compact('usuario'));
 }
 
 <span class="highlight">function</span> update($id): <span class="highlight">void</span> {
-    <span class="highlight">// Receber dados do POST</span>
+    $ns = model('usuario');
     $nome = inputPOST('nome');
     $email = inputPOST('email');
     
-    model('usuario')->atualizar($id, $nome, $email);
+    "{$ns}atualizar"($id, ['nome' => $nome, 'email' => $email]);
     redirect('/usuario/' . $id);
 }</code></pre>
         </div>
@@ -125,7 +125,7 @@
     
     <span class="highlight">// Validar dados</span>
     <span class="highlight">if</span> (empty($nome) || empty($email) || empty($mensagem)) {
-        session('error', 'Preencha todos os campos');
+        sessionSet('error', 'Preencha todos os campos');
         redirect('/contato');
         <span class="highlight">return</span>;
     }
@@ -133,7 +133,7 @@
     <span class="highlight">// Enviar email (exemplo)</span>
     mail('admin@example.com', 'Contato: ' . $nome, $mensagem);
     
-    session('success', 'Mensagem enviada com sucesso!');
+    sessionSet('success', 'Mensagem enviada com sucesso!');
     redirect('/contato');
 }</code></pre>
         </div>
@@ -143,9 +143,10 @@
         <h2>💡 Dicas</h2>
         <ul class="doc-list">
             <li>Mantenha controllers pequenos e focados em uma responsabilidade</li>
-            <li>Use <code>extract()</code> para passar variáveis para views: <code>view('path', compact('var1', 'var2'))</code></li>
+            <li>Use <code>compact()</code> para passar variáveis para views</li>
             <li>Valide dados de entrada sempre que possível</li>
             <li>Redirecione após operações POST para evitar reenvio de formulários</li>
+            <li>Use <code>sessionSet()</code> e <code>sessionGet()</code> para flash messages</li>
         </ul>
     </section>
 </div>

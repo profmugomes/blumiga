@@ -8,7 +8,6 @@
 function model(string $model_path): string
 {
     $model_path = str_replace('\\', '/', $model_path);
-
     // Garante que o sufixo 'Model' exista no final do caminho informado
     if (substr($model_path, -5) !== 'Model') {
         $model_path .= 'Model';
