@@ -9,7 +9,7 @@ if (php_sapi_name() !== 'cli') {
     die('Este script só pode ser executado via linha de comando.');
 }
 
-define('blumiga', true);
+define('BLUMIGA', true);
 
 // 1. Carrega as configurações globais e o Autoload do Composer
 require_once __DIR__ . '/config/config.php';
@@ -20,6 +20,8 @@ $comando = $argv[1] ?? 'help';
 $parametro = $argv[2] ?? null;
 
 switch ($comando) {
+    case '--help':
+    case '-h':
     case 'help':
         exibirAjuda();
         break;
@@ -90,6 +92,85 @@ switch ($comando) {
         executarRollbackSeeders($parametro);
         break;
 
+    case 'version':
+        $composer = json_decode(file_get_contents(__DIR__ . '/composer.json'), true);
+        echo "\033[34mBlumiga v" . ($composer['version'] ?? 'desconhecida') . "\033[0m\n";
+        break;
+
+    case 'route:list':
+        $blumiga_routes = [];
+        $blumiga_named_routes = [];
+        $blumiga_404_handler = null;
+        $blumiga_current_sub_namespace = '';
+        $blumiga_current_url_prefix = '';
+        $blumiga_current_middleware = [];
+        $blumiga_routePath = '/';
+        $blumiga_routeURLParts = [];
+        $blumiga_routeURLs = ['/', []];
+
+        require_once __DIR__ . '/core/functions.php';
+        require_once __DIR__ . '/core/route.php';
+        require_once __DIR__ . '/config/routes.php';
+
+        echo "\n\033[34m📋 Rotas Registradas\033[0m\n\n";
+        echo "\033[33m" . str_pad('MÉTODO', 8) . str_pad('ROTA', 40) . 'NOME' . "\033[0m\n";
+        echo str_repeat('─', 70) . "\n";
+
+        foreach ($blumiga_routes as $method => $routes) {
+            foreach ($routes as $path => $data) {
+                $name = '';
+                foreach ($blumiga_named_routes as $n => $p) {
+                    if ($p === $path) { $name = $n; break; }
+                }
+                $methodColor = $method === 'POST' ? "\033[33m" : "\033[32m";
+                echo $methodColor . str_pad($method, 8) . "\033[0m" . str_pad($path, 40) . $name . "\n";
+            }
+        }
+        echo "\n";
+        break;
+
+    case 'clear:cache':
+        echo "\033[33mLimpando cache...\033[0m\n";
+
+        // OPcache
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+            echo "\033[32m✔ OPcache limpo.\033[0m\n";
+        } else {
+            echo "\033[33m⚠ OPcache não disponível.\033[0m\n";
+        }
+
+        // Cache de assets (temp)
+        $cacheDir = __DIR__ . '/storage/cache';
+        if (!is_dir($cacheDir)) {
+            mkdir($cacheDir, 0755, true);
+        }
+
+        $files = glob($cacheDir . '/*');
+        $removed = 0;
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+                $removed++;
+            }
+        }
+        echo "\033[32m✔ {$removed} arquivo(s) removido(s) do storage/cache.\033[0m\n";
+
+        echo "\n\033[32m✔ Cache limpo com sucesso!\033[0m\n";
+        break;
+
+    case 'key:generate':
+        $length = (int)($parametro ?? 32);
+        if ($length < 16) $length = 16;
+        if ($length > 128) $length = 128;
+
+        $key = base64_encode(random_bytes($length));
+        echo "\n\033[34m🔑 Chave de Criptografia Gerada\033[0m\n\n";
+        echo "Tamanho: \033[33m{$length} bytes\033[0m\n";
+        echo "Chave:   \033[32m{$key}\033[0m\n\n";
+        echo "\033[33m📌 Copie esta chave e adicione em seu config.php\033[0m\n";
+        break;
+
     default:
         echo "\033[31mComando '{$comando}' não reconhecido.\033[0m\n";
         exibirAjuda();
@@ -98,7 +179,7 @@ switch ($comando) {
 
 // --- FUNÇÕES AUXILIARES DA CLI ---
 
-function exibirAjuda() {
+function exibirAjuda(): void {
     echo "\n\033[34m⚡ Blumiga CLI Funcional ⚡\033[0m\n\n";
     echo "\033[33mUso:\033[0m\n";
     echo "  php blumiga [comando] [argumento]\n\n";
@@ -114,6 +195,10 @@ function exibirAjuda() {
     echo "  \033[32mmigrate:rollback\033[0m       Executa as funções 'down' das migrations (ordem reversa).\n";
     echo "  \033[32mdb:seed\033[0m [nome]         Alimenta o banco executando as funções 'run'.\n";
     echo "  \033[32mdb:seed:rollback\033[0m [nome] Limpa os dados executando as funções 'down' dos seeders.\n";
+    echo "  \033[32mversion\033[0m                Exibe a versão do Blumiga.\n";
+    echo "  \033[32mroute:list\033[0m             Lista todas as rotas registradas.\n";
+    echo "  \033[32mclear:cache\033[0m            Limpa o cache da aplicação.\n";
+    echo "  \033[32mkey:generate\033[0m [tamanho] Gera uma chave de criptografia segura.\n";
     echo "  \033[32mhelp\033[0m                   Exibe este menu de ajuda.\n\n";
 }
 
@@ -165,7 +250,7 @@ function criarModel(string $nome): void {
 
 namespace Blumiga\\models\\{$nome};
 
-if (!defined('blumiga')) exit;
+if (!defined('BLUMIGA')) exit;
 
 function getData(): array {
     // Exemplo: carregar dados via model('{$nome}')
@@ -203,7 +288,7 @@ function criarView(string $nome): void {
 // View: " . ($subPasta ? $subPasta . '/' : '') . "{$nomeArquivo}
 // Gerado em: " . date('Y-m-d H:i:s') . "
 
-if (!defined('blumiga')) exit;
+if (!defined('BLUMIGA')) exit;
 ?>
 <!DOCTYPE html>
 <html lang=\"pt-BR\">
@@ -306,7 +391,7 @@ function criarMiddleware(string $nome): void {
 
 namespace Blumiga\\middleware\\{$nome};
 
-if (!defined('blumiga')) exit;
+if (!defined('BLUMIGA')) exit;
 
 function run(callable \$next, mixed \$param = null): void {
     \$next();
@@ -319,12 +404,13 @@ function run(callable \$next, mixed \$param = null): void {
     echo "\033[33m📌 Use-o em rotas: routeGET('/rota', 'ctrl@func', 'nome', ['{$nome}@run']);\033[0m\n";
 }
 
-function executarMigrations() {
+function executarMigrations(): void {
     echo "\033[33mBuscando e executando migrations funcionais...\033[0m\n";
     $diretorio = __DIR__ . '/app/database/migrations';
 
     if (!is_dir($diretorio)) {
-        die("Nenhuma migration encontrada.\n");
+        echo "\033[31mNenhuma migration encontrada.\033[0m\n";
+        return;
     }
 
     $arquivos = glob("{$diretorio}/*.php");
@@ -332,7 +418,12 @@ function executarMigrations() {
 
     foreach ($arquivos as $arquivo) {
         echo "Running UP: " . basename($arquivo) . "...\n";
-        $migration = require $arquivo;
+        try {
+            $migration = require $arquivo;
+        } catch (\Throwable $e) {
+            echo "\033[31mErro ao carregar " . basename($arquivo) . ": " . $e->getMessage() . "\033[0m\n";
+            continue;
+        }
 
         if (isset($migration['up']) && is_callable($migration['up'])) {
             $migration['up']();
@@ -342,12 +433,13 @@ function executarMigrations() {
     echo "\n\033[32m✔ Migrations executadas com sucesso!\033[0m\n";
 }
 
-function executarRollbackMigrations() {
+function executarRollbackMigrations(): void {
     echo "\033[33mIniciando Rollback das Migrations Funcionais (Ordem Reversa)...\033[0m\n";
     $diretorio = __DIR__ . '/app/database/migrations';
 
     if (!is_dir($diretorio)) {
-        die("Nenhuma migration encontrada.\n");
+        echo "\033[31mNenhuma migration encontrada.\033[0m\n";
+        return;
     }
 
     $arquivos = glob("{$diretorio}/*.php");
@@ -355,7 +447,12 @@ function executarRollbackMigrations() {
 
     foreach ($arquivos as $arquivo) {
         echo "Running DOWN: " . basename($arquivo) . "...\n";
-        $migration = require $arquivo;
+        try {
+            $migration = require $arquivo;
+        } catch (\Throwable $e) {
+            echo "\033[31mErro ao carregar " . basename($arquivo) . ": " . $e->getMessage() . "\033[0m\n";
+            continue;
+        }
 
         if (isset($migration['down']) && is_callable($migration['down'])) {
             $migration['down']();
@@ -371,14 +468,20 @@ function executarSeeders(?string $especifico = null): void {
     $diretorio = __DIR__ . '/app/database/seeders';
 
     if (!is_dir($diretorio)) {
-        die("Nenhum seeder encontrado.\n");
+        echo "\033[31mNenhum seeder encontrado.\033[0m\n";
+        return;
     }
 
     if ($especifico) {
         $arquivo = "{$diretorio}/{$especifico}Seeder.php";
         if (file_exists($arquivo)) {
             echo "Seeding: " . basename($arquivo) . "...\n";
-            $seeder = require $arquivo;
+            try {
+                $seeder = require $arquivo;
+            } catch (\Throwable $e) {
+                echo "\033[31mErro ao carregar " . basename($arquivo) . ": " . $e->getMessage() . "\033[0m\n";
+                return;
+            }
             if (isset($seeder['run']) && is_callable($seeder['run'])) {
                 $seeder['run']();
             }
@@ -391,7 +494,12 @@ function executarSeeders(?string $especifico = null): void {
         sort($arquivos);
         foreach ($arquivos as $arquivo) {
             echo "Seeding: " . basename($arquivo) . "...\n";
-            $seeder = require $arquivo;
+            try {
+                $seeder = require $arquivo;
+            } catch (\Throwable $e) {
+                echo "\033[31mErro ao carregar " . basename($arquivo) . ": " . $e->getMessage() . "\033[0m\n";
+                continue;
+            }
             if (isset($seeder['run']) && is_callable($seeder['run'])) {
                 $seeder['run']();
             }
@@ -405,14 +513,20 @@ function executarRollbackSeeders(?string $especifico = null): void {
     $diretorio = __DIR__ . '/app/database/seeders';
 
     if (!is_dir($diretorio)) {
-        die("Nenhum seeder encontrado.\n");
+        echo "\033[31mNenhum seeder encontrado.\033[0m\n";
+        return;
     }
 
     if ($especifico) {
         $arquivo = "{$diretorio}/{$especifico}Seeder.php";
         if (file_exists($arquivo)) {
             echo "Rolling back Seeder: " . basename($arquivo) . "...\n";
-            $seeder = require $arquivo;
+            try {
+                $seeder = require $arquivo;
+            } catch (\Throwable $e) {
+                echo "\033[31mErro ao carregar " . basename($arquivo) . ": " . $e->getMessage() . "\033[0m\n";
+                return;
+            }
             if (isset($seeder['down']) && is_callable($seeder['down'])) {
                 $seeder['down']();
             }
@@ -425,7 +539,12 @@ function executarRollbackSeeders(?string $especifico = null): void {
         rsort($arquivos);
         foreach ($arquivos as $arquivo) {
             echo "Rolling back Seeder: " . basename($arquivo) . "...\n";
-            $seeder = require $arquivo;
+            try {
+                $seeder = require $arquivo;
+            } catch (\Throwable $e) {
+                echo "\033[31mErro ao carregar " . basename($arquivo) . ": " . $e->getMessage() . "\033[0m\n";
+                continue;
+            }
             if (isset($seeder['down']) && is_callable($seeder['down'])) {
                 $seeder['down']();
             }
