@@ -1,7 +1,7 @@
 # Blumiga
 
-[![PHPStan](https://github.com/profmugomes/blumiga/actions/workflows/ci.yml/badge.svg?job=phpstan&label=PHPStan)](https://github.com/profmugomes/blumiga/actions/workflows/ci.yml)
-[![PHPUnit](https://github.com/profmugomes/blumiga/actions/workflows/ci.yml/badge.svg?job=phpunit&label=PHPUnit)](https://github.com/profmugomes/blumiga/actions/workflows/ci.yml)
+[![PHPStan](https://github.com/profmugomes/blumiga/actions/workflows/phpstan.yml/badge.svg)](https://github.com/profmugomes/blumiga/actions/workflows/phpstan.yml)
+[![Tests](https://github.com/profmugomes/blumiga/actions/workflows/tests.yml/badge.svg)](https://github.com/profmugomes/blumiga/actions/workflows/tests.yml)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.4-777bb4?logo=php&logoColor=white)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue?logo=opensourceinitiative&logoColor=white)](LICENSE)
 
