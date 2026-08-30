@@ -28,10 +28,7 @@
     "autoload": {
         "psr-4": {
             "Blumiga\\": "libs/"
-        },
-        "files": [
-            "core/functions.php"
-        ]
+        }
     },
     "config": {
         "optimize-autoloader": true,
