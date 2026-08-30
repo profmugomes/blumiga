@@ -423,7 +423,7 @@ function encrypt(string $value, string $key): string
 function decrypt(string $value, string $key): string|false
 {
     $cipher = 'aes-256-cbc';
-    $data = base64_decode($value);
+    $data = base64_decode($value, true);
     if ($data === false || $data === '') return false;
 
     $ivLength = openssl_cipher_iv_length($cipher);

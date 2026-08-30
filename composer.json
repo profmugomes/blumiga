@@ -40,6 +40,15 @@
     "scripts": {
         "post-root-package-install": [
             "@php -r \"file_exists('config/config.php') || copy('config/config.example.php', 'config/config.php');\""
-        ]
+        ],
+        "test": "php tests/phpunit --bootstrap tests/bootstrap.php tests/",
+        "test:security": "php tests/phpunit --bootstrap tests/bootstrap.php tests/Security/",
+        "test:error": "php tests/phpunit --bootstrap tests/bootstrap.php tests/Error/",
+        "test:unit": "php tests/phpunit --bootstrap tests/bootstrap.php tests/Unit/",
+        "analyse": "vendor/bin/phpstan analyse --memory-limit=512M"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.2",
+        "phpunit/phpunit": "^13"
     }
 }

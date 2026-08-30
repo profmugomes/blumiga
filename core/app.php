@@ -6,7 +6,7 @@
 
 if (!defined('BLUMIGA')) exit;
 
-if ($blumigaDev) {
+if (!empty($blumigaDev)) {
     error_reporting(E_ALL);
     ini_set('display_errors', true);
 }

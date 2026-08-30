@@ -1,0 +1,11 @@
+parameters:
+    level: 5
+    paths:
+        - core/
+        - app/controllers/
+        - app/models/
+        - app/middleware/
+        - libs/
+    tmpDir: storage/phpstan
+    scanDirectories:
+        - app/views

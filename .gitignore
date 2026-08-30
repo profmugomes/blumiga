@@ -10,3 +10,9 @@ config/config.php
 
 # agents
 AGENTS.md
+
+# phpunit
+tests/.phpunit.cache/
+
+# phpstan
+storage/phpstan/
