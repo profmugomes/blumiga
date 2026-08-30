@@ -3,7 +3,7 @@
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.2-777bb4.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Microframework MVC para PHP com programação procedural e conceitos funcionais.
+Microframework MVC procedural para PHP, com suporte a MySQL/MariaDB via BlumigaDB.
 
 > Fornecer um núcleo sólido para que cada desenvolvedor monte apenas o framework que realmente precisa.
 
@@ -12,9 +12,16 @@ Microframework MVC para PHP com programação procedural e conceitos funcionais.
 ## Requisitos
 
 * PHP 8.2 ou superior
+* ext-openssl
+* ext-mbstring
 * Composer
-* ext-intl (opcional)
 * Apache, Nginx ou PHP built-in server
+
+### Extensões opcionais
+
+* ext-zlib — compressão gzip
+* ext-intl — formatCurrency(), dayOfWeek(), monthName()
+* ext-mysqli — banco de dados (BlumigaDB)
 
 ---
 

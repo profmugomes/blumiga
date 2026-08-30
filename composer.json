@@ -1,7 +1,7 @@
 {
     "name": "profmugomes/blumiga",
     "version": "1.1.0-alpha",
-    "description": "Blumiga é um microframework MVC para PHP com arquitetura procedural, modular e de alta performance.",
+    "description": "Blumiga é um microframework MVC procedural para PHP com suporte a MySQL/MariaDB via BlumigaDB.",
     "keywords": ["php", "framework", "microframework", "mvc", "procedural", "functional", "modular", "lightweight", "composer", "blumiga"],
     "type": "project",
     "authors": [
@@ -18,12 +18,12 @@
     "require": {
         "php": ">=8.2",
         "ext-openssl": "*",
-        "ext-mbstring": "*",
-        "ext-zlib": "*",
-        "ext-mysqli": "*"
+        "ext-mbstring": "*"
     },
     "suggest": {
-        "ext-intl": "Necessário para formatCurrency(), dayOfWeek() e monthName()"
+        "ext-zlib": "Necessário para compressão gzip (ob_gzhandler)",
+        "ext-intl": "Necessário para formatCurrency(), dayOfWeek() e monthName()",
+        "ext-mysqli": "Necessário para banco de dados (BlumigaDB)"
     },
     "autoload": {
         "psr-4": {
