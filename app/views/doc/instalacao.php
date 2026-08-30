@@ -9,8 +9,8 @@
         <h2>📋 Pré-requisitos</h2>
         <div class="card-grid">
             <div class="card">
-                <h3>PHP 8.2+</h3>
-                <p>O BluMiga requer PHP 8.2 ou superior para funcionar corretamente.</p>
+                <h3>PHP 8.4+</h3>
+                <p>O BluMiga requer PHP 8.4 ou superior para funcionar corretamente.</p>
             </div>
             <div class="card">
                 <h3>Composer</h3>

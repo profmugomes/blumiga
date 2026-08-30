@@ -13,7 +13,7 @@ Microframework MVC procedural para PHP, com suporte a MySQL/MariaDB via BlumigaD
 
 ## Requisitos
 
-* PHP 8.2 ou superior
+* PHP 8.4 ou superior
 * ext-openssl
 * ext-mbstring
 * Composer
